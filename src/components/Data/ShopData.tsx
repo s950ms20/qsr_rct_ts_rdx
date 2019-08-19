@@ -2,7 +2,7 @@ import { db } from './Firebase';
 
 
 //Add User
-export const addProduct = (title: string, author: string, description: string, releaseDate: string, price: number, quantity: number , maxCopies4OneCustomer: number, img1: string, img2: string, img3: string) => {
+export const addProduct = (title: string, author: string, description: string, releaseDate: string, price: number, quantity: number , maxCopies4OneCustomer: number, imgs: string[]) => {
 
     interface Product {
         title: string;
@@ -27,16 +27,11 @@ export const addProduct = (title: string, author: string, description: string, r
         }
     }
 
-    const new_imgs: string[] = [];
-    new_imgs.push(img1,img2,img3);
-    const new_product = new Product ( title, author, new_imgs, description, releaseDate, price, quantity, maxCopies4OneCustomer);
+    const new_product = new Product ( title, author, imgs, description, releaseDate, price, quantity, maxCopies4OneCustomer);
 
-   
     const new_obj: object = {};
     const expected_output = Object.assign(new_obj, new_product);
     console.log(expected_output);
-    
-
 
     db.collection("products").add(expected_output)
     .then((docRef: any) => {
@@ -50,8 +45,10 @@ export const addProduct = (title: string, author: string, description: string, r
 
 
 // //Read Data
-// db.collection("users").get().then((querySnapshot) => {
-//             querySnapshot.forEach((doc) => {
-//                 console.log(`${doc.id} => ${doc.data()}`);
-//             });
-//         });
+db.collection("products").get().then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+
+
+                console.log(`${doc.id} => ${doc.data().title}`);
+            });
+        });

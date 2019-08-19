@@ -12,6 +12,7 @@ import styled from 'styled-components';
 import AppRegister from './Auth/AppRegister';
 import AppLogin from './Auth/AppLogin';
 import HiddenDoor from './admin/HiddenDoor';
+import {ImgData} from './tools/ImgData';
 
 const Margin = styled.div`
 margin: 10px;
@@ -19,8 +20,12 @@ padding: 10px;
 `
 
 const View: React.FC = () => {
+
+    const [imgs, setImgs] = React.useState<string[]>([])
+
     return (
         <React.Fragment>
+            <ImgData.Provider value={{imgs: imgs, setImgs: setImgs}}>
             <Margin>
                 <Switch>
                     <Route exact path='/' component={AppNews} />
@@ -37,6 +42,7 @@ const View: React.FC = () => {
 
                 </Switch>
             </Margin>
+            </ImgData.Provider>
         </React.Fragment>
     )
 }

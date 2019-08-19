@@ -1,4 +1,4 @@
-import { db, auth } from './Firebase';
+import { auth } from './Firebase';
 const history = require("history").createBrowserHistory();
 
 
