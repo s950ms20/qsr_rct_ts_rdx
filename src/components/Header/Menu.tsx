@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import {MenuItem, MenuListClass} from '../../styles/Styles'
 import { menuList } from './MenuList'
 import { Link } from 'react-router-dom'
 const uuidv1 = require('uuid/v1');
@@ -26,29 +27,7 @@ right: 20px;
   display: none;
 }`
 
-const MenuListClass = styled.div`
-display: flex;
 
- @media only screen and (max-width: 750px) {
-    flex-direction: column;
-}
-@media only screen and (min-width: 750px) {
-    flex-direction: row;
-}
-`
-
-export const MenuItem = styled.div`
-background-color: transparent;
-color: black;
-flex: 1;
-margin: 5px;
-padding: 5px;
-
-&:hover {
-    background: gray;
-}
-
-`
 
 const Menu: React.FC = (props) => {
     const [showMenu, setShowMenu] = React.useState(false);
