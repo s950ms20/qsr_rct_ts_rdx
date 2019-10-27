@@ -12,10 +12,13 @@ import styled from 'styled-components';
 import AppRegister from './Auth/AppRegister';
 import AppLogin from './Auth/AppLogin';
 import HiddenDoor from './admin/HiddenDoor';
-import AddProductComponent from './admin/shop/AddProduct';
+import EditProduct from './admin/shop/EditProduct';
+import AddProductComponent from './admin/shop/AddProductComponent';
 import EditProducts from './admin/shop/EditProducts';
-import {ImgData} from './tools/ImgData';
-import {TextData} from './tools/MyEditorData';
+import ContextProvider from './tools/ContextProvider';
+import AppProduct from './Shop/Product';
+import ShoppingCart from './Shop/ShoppingCart';
+import AppCart from './admin/shop/orders/AppCart'
 
 const Margin = styled.div`
 margin: 10px;
@@ -23,32 +26,31 @@ padding: 10px;
 `
 
 const View: React.FC = () => {
-
-    const [imgs, setImgs] = React.useState<string[]>([])
-    const [text, setText] = React.useState<any>()
-
     return (
         <React.Fragment>
-            <ImgData.Provider value={{imgs: imgs, setImgs: setImgs}}>
-                <TextData.Provider value={{text: text, setText:setText}}>
-                    <Margin>
-                        <Switch>
-                            <Route exact path='/' component={AppNews} />
-                            <Route exact path='/Artists' component={AppArtists} />
-                            <Route exact path='/About' component={AppAbout} />
-                            <Route exact path='/Archive' component={AppArchive} />
-                            <Route exact path='/Shop' component={AppShop} />
-                            <Route exact path='/Contact' component={AppContact} />
-                            <Route exact path='/Newsletter' component={AppNewsletter} />
-                            <Route exact path='/User' component={AppAuth} />
-                            <Route exact path='/Register' component={AppRegister} />
-                            <Route exact path='/Login' component={AppLogin} />
-                            <Route exact path='/HiddenDoor' component={HiddenDoor} />
-
+            <ContextProvider>
+                <Margin>
+                    <Switch>
+                        {/* <Route exact path='/' component={AppNews} /> */}
+                        <Route exact path='/Artists' component={AppArtists} />
+                        <Route exact path='/About' component={AppAbout} />
+                        <Route exact path='/Archive' component={AppArchive} />
+                        <Route exact path='/' component={AppShop} />
+                        <Route exact path='/ShoppingCart' component={ShoppingCart} />
+                        <Route exact path='/Contact' component={AppContact} />
+                        <Route exact path='/Newsletter' component={AppNewsletter} />
+                        <Route exact path='/User' component={AppAuth} />
+                        <Route exact path='/Register' component={AppRegister} />
+                        <Route exact path='/Login' component={AppLogin} />
+                        <Route exact path='/HiddenDoor' component={HiddenDoor} />
+                        <Route exact path='/EditProduct' component={EditProduct} />
+                        <Route exact path='/EditProducts' component={EditProducts} />
+                        <Route exact path='/AddProduct' component={AddProductComponent} />
+                        <Route exact path='/Product' component={AppProduct} />
+                        <Route exact path='/Cart' component={AppCart} />
                         </Switch>
                     </Margin>
-                </TextData.Provider>
-            </ImgData.Provider>
+            </ContextProvider>
         </React.Fragment>
     )
 }

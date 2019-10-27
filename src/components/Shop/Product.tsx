@@ -1,44 +1,53 @@
 import React from 'react';
+import { mapStateToProps, mapDispatchToProps } from '../Data/mapTools';
 import {MyButton, Row, Col, Flex, ProductBox, ProductImg, ProductBasicInfo, Bold, ProductDetailInfo, GoToTheRight} from '.././../styles/Styles'
-import { Editor, EditorState} from "draft-js";
-import { newObject} from '../Data/ShopData';
+import { Editor} from "draft-js";
+import { Product } from '../Data/ShopData';
+import {ContextData} from '../tools/ContextData';
+import { connect } from 'react-redux';
+import { Link } from 'react-router-dom'
 
-interface Props {
-    product: newObject
+type Props = {
+    onADD_PRODUCT_TO_CART: any
 }
 
-
-const Product: React.FC<Props> = ({product}) => {
-
-    const desc_data = EditorState.createWithContent(product.desc);
+const AppProduct: React.FC<Props> = ({onADD_PRODUCT_TO_CART}) => {
     const [showMore, setShowMore] = React.useState(false);
+    const ctx = React.useContext(ContextData);
+    const prd: Product = ctx.prd;
+    const userName = ctx.userName;
 
     return (
         <React.Fragment>
+        { prd !== undefined ? (
+            <React.Fragment>
             <Flex>
                 <Row>
                     <ProductBox>
                             <Col>
-                                    <ProductImg src={product.imgs[0]} />
+                                    <ProductImg src={prd.imgs[0]} />
                             </Col>
                             <Col>
                                     <ProductBasicInfo>
                                         <Bold>
-                                            {product.author}<br/>
-                                            '{product.title}'<br/>
+                                            {prd.author}<br/>
+                                            '{prd.title}'<br/>
                                         </Bold>
-                                        Released: {product.releaseDate}<br/>
-                                        Format: {product.format}<br/>
-                                        Format Details: {product.formatDetails}<br/>
-                                        {product.quantity > 0
-                                            ? <>Copies Left: {product.quantity}<br/></>
+                                        {prd.id}<br/>
+                                        Released: {prd.releaseDate}<br/>
+                                        Format: {prd.format}<br/>
+                                        Format Details: {prd.formatDetails}<br/>
+                                        {prd.quantity > 0
+                                            ? <>Copies Left: {prd.quantity}<br/></>
                                             : <>Not Available<br/></>}
                                         <Bold>
-                                            Price: {product.price}PLN<br/>
+                                            Price: {prd.price}PLN<br/>
                                         </Bold>
                                     </ProductBasicInfo>
                                     <GoToTheRight>
-                                        <MyButton onClick={()=>setShowMore(!showMore)}>More</MyButton>
+                                        <MyButton onClick={()=>setShowMore(!showMore)}>More Info</MyButton>
+                                        <MyButton onClick={()=>onADD_PRODUCT_TO_CART(prd.id, userName, prd.price)}>Add To Cart</MyButton>
+                                        <Link to='/'><MyButton>Go Back</MyButton></Link>
                                     </GoToTheRight>
                             </Col>
                     </ProductBox>
@@ -47,13 +56,15 @@ const Product: React.FC<Props> = ({product}) => {
                     {showMore ?
                         ( <>
                             <ProductDetailInfo>
-                                <Editor editorState={desc_data} readOnly={true} onChange={()=>{}}/>
+                                <Editor editorState={prd.desc} readOnly={true} onChange={()=>{}}/>
                             </ProductDetailInfo>
                         </> ) : null }
                 </Row>
             </Flex>
         </React.Fragment>
+            ) : null }
+                    </React.Fragment>
     )
 }
 
-export default Product;
+export default connect(mapStateToProps, mapDispatchToProps)(AppProduct);

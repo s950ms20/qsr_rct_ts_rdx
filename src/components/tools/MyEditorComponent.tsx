@@ -1,20 +1,28 @@
 import React from 'react';
 import {Editor, EditorState, RichUtils} from 'draft-js';
 import {Box, ButtonsPanel, MyButton} from './../../styles/Styles';
-import {TextData} from './MyEditorData'; 
+import {ContextData} from './ContextData'; 
 
 const MyEditor = () =>  {
   const [editorState, setEditorState] = React.useState(
     EditorState.createEmpty()
   );
-  const globalText = React.useContext(TextData);
+  const context = React.useContext(ContextData);
+  const ctx  = context.text;
 
   React.useEffect(
     ()=>{
-      globalText.setText(editorState);
-      console.log(editorState)
-    },
-    [editorState]
+    // context.loadDataToEdit ? setEditorState(ctx) : context.setText(editorState);
+    // context.setLoadDataToEdit(false);
+    // const old_editorState = editorState;
+    // if (!context.loadDataToEdit) {
+    //   context.setText(editorState)
+    // }
+    // console.log(old_editorState === editorState);
+    
+    context.setText(editorState)
+  },
+    [ctx, editorState]
   );
 
   const blockTypes = [
@@ -66,6 +74,12 @@ function  handleKeyCommand(command: string, editorState: EditorState) {
                 </MyButton>
             })
             }
+        </ButtonsPanel>
+        <ButtonsPanel>
+        <MyButton onClick={()=>{
+          setEditorState(ctx);
+          console.log(ctx);
+          }}>Copy Description</MyButton>
         </ButtonsPanel>
         <Editor
         editorState={editorState}

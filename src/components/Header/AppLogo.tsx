@@ -4,7 +4,8 @@ import styled from 'styled-components';
 
 const LogoImg = styled.img`
 height: 60vh;
-margin: 50px;`
+margin: 50px;
+`
 
 const AppLogo: React.FC = () => {
 

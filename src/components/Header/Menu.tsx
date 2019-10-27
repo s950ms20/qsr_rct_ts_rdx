@@ -27,8 +27,6 @@ right: 20px;
   display: none;
 }`
 
-
-
 const Menu: React.FC = (props) => {
     const [showMenu, setShowMenu] = React.useState(false);
     const innerWidth = window.innerWidth;

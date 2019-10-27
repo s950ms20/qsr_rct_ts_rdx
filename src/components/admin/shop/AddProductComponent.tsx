@@ -1,17 +1,10 @@
 import React from 'react';
 import { MyButton, MyInput, Flex, InfoField, Row, GoToTheRight }from '../../../styles/Styles';
-import { addProduct } from '../../Data/ShopData';
-import ImgUploader from './../../tools/ImgUploader';
-import {ImgData} from '../../tools/ImgData';
+import { addProduct, formats, format } from '../../Data/ShopData';
+import ImgUploader from '../../tools/ImgUploader';
 import MyEditor from '../../tools/MyEditorComponent';
-import {TextData} from '../../tools/MyEditorData';
+import {ContextData} from '../../tools/ContextData';
 import Select from 'react-select';
-
-interface  format {
-    value: string,
-    label: string,
-    id: string
-}
 
 const AddProductComponent: React.FC = ()=> {
    const [title, setTitle]  = React.useState('new title');
@@ -22,36 +15,31 @@ const AddProductComponent: React.FC = ()=> {
    const  [maxCopies4OneCustomer, setMaxCopies4OneCustomer] = React.useState(1);
    const [formatDetails, setFormatDetails] = React.useState('');
    const [chosenFormat, setChosenFormat] = React.useState<format>()
-   const globalImgs = React.useContext(ImgData);
-   const imgs = globalImgs.imgs;
-   const globalText = React.useContext(TextData);
-   const text = globalText.text;
+   const ctx = React.useContext(ContextData);
+   const imgs = ctx.imgs;
+   const text = ctx.text;
    const description = text;
-
-    const formats: format[] = [
-        {
-            value: 'Vinyl',
-            label: 'Vinyl',
-            id: 'Vinyl'
-        },
-        {
-            value: 'CD',
-            label: 'CD',
-            id: 'CD'
-        },
-        {
-            value: 'Tape',
-            label: 'Tape',
-            id: 'Tape'
-        },
-        {
-            value: 'Digital',
-            label: 'Digital',
-            id: 'Digital'
-        }
-    ];
+   const new_temporary_id = String(`new_temporary_id_${Math.random()*10004251}`);
+   
 
 
+   React.useEffect(
+       ()=>{
+           ctx.setEditMode(false);
+           ctx.setLoadDataToEdit(false);
+       }, []
+   )
+
+    const clearFields = () => {
+        setTitle('');
+        setAuthor('');
+        setPrice(1);
+        setQuantity(0);
+        setFormatDetails('');
+        setMaxCopies4OneCustomer(1);
+        ctx.setImgs([]);
+        ctx.setText('');
+    }
 
     return (
         <React.Fragment>
@@ -67,6 +55,9 @@ const AddProductComponent: React.FC = ()=> {
                     <InfoField>IMAGES:</InfoField>
                     <ImgUploader/>
                     <InfoField>DESCRIPTION:</InfoField>
+                    {/* <InfoField>
+                        <Editor editorState={ctx.text} readOnly={true} onChange={()=>{}}/>
+                    </InfoField> */}
                     <MyEditor />
                 <Row>
                     <InfoField>RELEASED:</InfoField>
@@ -95,8 +86,15 @@ const AddProductComponent: React.FC = ()=> {
             </Flex>
             <Row>
                 <GoToTheRight>
-                    {chosenFormat === undefined ? null : 
-                    <MyButton onClick={()=>addProduct(title, author, description, releaseDate, price, quantity, maxCopies4OneCustomer, imgs, chosenFormat.value, formatDetails)}>Add New Product</MyButton> }
+                    <MyButton onClick={()=>clearFields()}>Empty Project</MyButton>
+                    {chosenFormat === undefined ? null :
+                    <MyButton onClick={
+                        ()=>{
+                            addProduct(new_temporary_id, title, author, description, releaseDate, price, quantity, maxCopies4OneCustomer, imgs, chosenFormat.value, formatDetails);
+                            ctx.setHelperData(Math.random())
+                        }
+                    }>Add New Product</MyButton>
+                     }
                 </GoToTheRight>
             </Row>
         </React.Fragment>

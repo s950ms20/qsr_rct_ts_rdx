@@ -1,13 +1,38 @@
 import { db } from './Firebase';
-import {convertToRaw, convertFromRaw} from 'draft-js'
+import {convertToRaw, convertFromRaw, EditorState} from 'draft-js'
+import { Order } from './Types';
 
+export interface  format {
+    value: string,
+    label: string,
+    id: string
+}
 
-//Add User
-export const addProduct = (title: string, author: string, description: any, releaseDate: string, price: number, quantity: number , maxCopies4OneCustomer: number, imgs: string[], format: string, formatDetails: string) => {
+export const formats: format[] = [
+    {
+        value: 'Vinyl',
+        label: 'Vinyl',
+        id: 'Vinyl'
+    },
+    {
+        value: 'CD',
+        label: 'CD',
+        id: 'CD'
+    },
+    {
+        value: 'Tape',
+        label: 'Tape',
+        id: 'Tape'
+    },
+    {
+        value: 'Digital',
+        label: 'Digital',
+        id: 'Digital'
+    }
+];
 
-    const desc = convertToRaw(description.getCurrentContent())
-
-    interface Product {
+export interface Product {
+        id: string;
         title: string;
         author: string;
         imgs: string[];
@@ -19,8 +44,9 @@ export const addProduct = (title: string, author: string, description: any, rele
         format: string;
         formatDetails: string;
     }
-    class Product {
-        constructor(title: string, author: string, imgs: string[], desc: any, releaseDate: string, price: number, quantity: number , maxCopies4OneCustomer: number, format: string, formatDetails: string){
+    export class Product {
+        constructor(id: string, title: string, author: string, imgs: string[], desc: any, releaseDate: string, price: number, quantity: number , maxCopies4OneCustomer: number, format: string, formatDetails: string){
+            this.id = id;
             this.title = title;
             this.author = author;
             this.imgs = imgs;
@@ -34,11 +60,15 @@ export const addProduct = (title: string, author: string, description: any, rele
         }
     }
 
-    const new_product = new Product ( title, author, imgs, desc, releaseDate, price, quantity, maxCopies4OneCustomer, format, formatDetails);
+//Add Product
+export const addProduct = (id: string, title: string, author: string, description: any, releaseDate: string, price: number, quantity: number , maxCopies4OneCustomer: number, imgs: string[], format: string, formatDetails: string) => {
+
+    const desc = JSON.stringify(convertToRaw(description.getCurrentContent()));
+
+    const new_product = new Product (id, title, author, imgs, desc, releaseDate, price, quantity, maxCopies4OneCustomer, format, formatDetails);
 
     const new_obj: object = {};
     const expected_output = Object.assign(new_obj, new_product);
-    console.log(expected_output);
 
     db.collection("products").add(expected_output)
     .then((docRef: any) => {
@@ -47,84 +77,72 @@ export const addProduct = (title: string, author: string, description: any, rele
     .catch((error: any) => {
         console.error("Error adding document: ", error);
     });
-
 }
 
 //Read Data
-export interface newObject {
-                    id: string;
-                    title: string;
-                    author: string;
-                    imgs: string[];
-                    desc: any;
-                    releaseDate: string;
-                    price: number;
-                    quantity: number;
-                    maxCopies4OneCustomer: number;
-                    format: string;
-                    formatDetails: string;
-                };
-export class newObject {
-                    constructor(id: string, author: string, title: string, desc: any, imgs: string[], maxCopies4OneCustomer: number, price: number, quantity: number,  releaseDate: string, format: string, formatDetails: string) {
-                        this.id = id;
-                        this.author = author;
-                        this.title = title;
-                        this.desc = desc;
-                        this.imgs = imgs;
-                        this.maxCopies4OneCustomer = maxCopies4OneCustomer;
-                        this.releaseDate = releaseDate;
-                        this.price = price;
-                        this.quantity = quantity;
-                        this.format = format;
-                        this.formatDetails = formatDetails;
-                    }
-                };
 export async function  getData() {
-
-    const outputArray: newObject[] = [];
-    let descConverted: any = {};
-    let id: string = '';
-    let title: string = '';
-    let author: string = '';
-    let imgs: string[] = [];
+    const outputArray: Product[] = [];
     let desc: any = [];
-    let releaseDate: string = '';
-    let price: number = 999;
-    let quantity: number = 1;
-    let maxCopies4OneCustomer: number = 1;
-    let format: string = '';
-    let fromatDetails: string = '';
-    await db.collection('products').get().then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-            id = doc.id;
-            author = doc.data().author;
-            title = doc.data().title;
-            descConverted = convertFromRaw(doc.data().desc);
-            imgs = doc.data().imgs;
-            maxCopies4OneCustomer = doc.data().maxCopies4OneCustomer;
-            price = doc.data().price;
-            quantity = doc.data().quantity;
-            releaseDate = doc.data().releaseDate;
-            format = doc.data().format;
-            fromatDetails = doc.data().formatDetails
 
-            const obj = new newObject(
-                id,
-                author,
-                title,
-                descConverted,
-                imgs,
-                maxCopies4OneCustomer,
-                price,
-                quantity,
-                releaseDate,
-                format,
-                fromatDetails
+    await db.collection('products')
+    .get()
+    .then((querySnapshot) => {
+        querySnapshot
+        .forEach((doc) => {
+            desc = EditorState.createWithContent(convertFromRaw(JSON.parse(doc.data().desc)))
+            const obj = new Product(
+                doc.id,
+                doc.data().author,
+                doc.data().title,
+                doc.data().imgs,
+                desc,
+                doc.data().releaseDate,
+                doc.data().price,
+                doc.data().quantity,
+                doc.data().maxCopies4OneCustomer,
+                doc.data().format,
+                doc.data().formatDetails
                 );
             outputArray.push(obj);
-            console.log(`${doc.id} added`);
-            });
-        });
-        console.log(outputArray);
+            })
+        })
         return outputArray;
     }
+
+    // delete 
+    export const deleteData = (collection: string, id: string) => {
+    db.collection(collection).doc(id).delete()
+    .then(() => console.log("Document successfully deleted!"))
+    .catch((error) => console.error("Error removing document: ", error))
+    }
+
+    // edit update
+    export const updateData = (collection: string, id: string, title: string, author: string, description: any, releaseDate: string, price: number, quantity: number , maxCopies4OneCustomer: number, imgs: string[], format: string, formatDetails: string ) => {
+        const new_desc = JSON.stringify(convertToRaw(description.getCurrentContent()));
+        console.log(new_desc);
+        db.collection(collection).doc(id).update({
+            id: id,
+            title:title,
+            author: author,
+            desc: new_desc,
+            releaseDate: releaseDate,
+            price: price,
+            maxCopies4OneCustomer,
+            quantity: quantity,
+            format: format,
+            formatDetails: formatDetails,
+            imgs: imgs
+        })
+        .then(()=>console.log(`Document ${id} from collection: ${collection} successfully updated!`))
+        .catch((error)=>console.log(`Document ${id} error: ${error.message}`))
+    };
+
+    // ORDERS
+
+
+        // FIND PRODUCTS
+
+        export async function findProducts(arr: any, id: string) {
+            return await arr.filter((elm: Product) => elm.id === id);
+        }
+

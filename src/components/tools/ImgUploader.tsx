@@ -2,21 +2,28 @@ import { storage } from '../Data/Firebase';
 import React from 'react';
 import { Flex, MyInput, MyButton } from '../../styles/Styles';
 import styled from 'styled-components';
-import { ImgData } from './ImgData';
+import { ContextData } from './ContextData';
 
 const uuidv1 = require('uuid/v1');
 
 const ImgUpload: React.FC = () => {
     const [precentage, setPrecentage] = React.useState(0);
     const [selectedFile, setSelectedFile] = React.useState<any>('');
-    const [ uploadedImgs, setUploadedImgs ] = React.useState<string[]>([]);
-    const globalImg = React.useContext(ImgData);
+    const [uploadedImgs, setUploadedImgs ] = React.useState<string[]>([]);
+    const globalImg = React.useContext(ContextData);
+
+    React.useEffect(
+        ()=>{
+            setUploadedImgs(globalImg.imgs)
+        }, []
+    )
 
     const fileSelectedHandler = (event: any)  => {
         setSelectedFile(event.target.files[0]);
      }
 
-    const fileUploadHandler = () => {
+    const fileUploadHandler = () => { 
+        
         const randomFIlename = `${uuidv1()}.jpg`
         const storageRef = storage
         .ref(`images/${randomFIlename}`)
@@ -25,11 +32,10 @@ const ImgUpload: React.FC = () => {
         () => {
             storageRef.getDownloadURL()
                .then(url => {
-                   const imgs: string[] = [];
+                   let imgs: string[] = [];
                     imgs.push(...uploadedImgs, url);
                     setUploadedImgs(imgs);
                     console.log(imgs);
-                    // console.log(precentage);
                     globalImg.setImgs(imgs)
                 })
                .catch((error: any) => console.log(error.message));
@@ -41,6 +47,22 @@ const ImgUpload: React.FC = () => {
         },
         (error: any) => console.log(error.message)
         )
+    }
+
+    const deleteImage = (img: string) => {
+        const newArray: string[] = uploadedImgs.filter((i: string) => i !== img);
+        setUploadedImgs(newArray);
+        globalImg.setImgs(newArray);
+        console.log(`${img} DELETED!!!`)
+    }
+
+    const defaultImg = (img: string) => {
+        const idx = uploadedImgs.indexOf(img);
+        const selectedImg = uploadedImgs[idx];
+        const newArray: string[] = uploadedImgs.filter((i: string) => i !== img);
+        newArray.unshift(selectedImg);
+        setUploadedImgs(newArray);
+        globalImg.setImgs(newArray);
     }
 
     const Filter = styled.div`
@@ -71,7 +93,11 @@ const ImgUpload: React.FC = () => {
             <Flex>
             <Images>
                 {uploadedImgs.map(img=> {
-                    return <UploadedImg src={img} key={uuidv1()} alt='uploaded file looks like this'/>
+                    return <React.Fragment key={uuidv1()}>
+                    <UploadedImg src={img} alt='uploaded file looks like this'/>
+                    <MyButton onClick={()=>defaultImg(img)}>Set as default image</MyButton>
+                    <MyButton onClick={()=>deleteImage(img)}>Delete</MyButton>
+                    </React.Fragment>
                 })}
             </Images>
             <MyInput type="file" onChange={fileSelectedHandler}/>
@@ -87,4 +113,3 @@ const ImgUpload: React.FC = () => {
 }
 
 export default ImgUpload;
-

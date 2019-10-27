@@ -1,18 +1,22 @@
 import React from 'react';
 import AppLogin from './AppLogin';
 import AppLogout from './AppLogout';
-import { loggedUserData }  from '../Data/AuthData';
+// import { loggedUserData }  from '../Data/AuthData';
 import { MyButton } from '../../styles/Styles';
 import { Link} from 'react-router-dom';
+import { connect } from 'react-redux';
+import { authDataMapStateToProps, authDataMapDispatchToProps   } from '../Data/AuthDataFldr/AuthDataMap';
+import { Data } from '../Data/AuthDataFldr/AuthDataTypes';
 
+type Props = {
+    userData: Data
+}
 
-const AppAuth: React.FC = () => {
-
-const actualUserData = loggedUserData();
-
+const AppAuth: React.FC<Props> = ({userData}) => {
+// const actualUserData = loggedUserData();
     return (
         <React.Fragment>
-            {actualUserData != null ?
+            {userData.email === undefined ?
                 <AppLogout/> :
                <>
                 <AppLogin/><br/>
@@ -26,4 +30,4 @@ const actualUserData = loggedUserData();
     )
 };
 
-export default AppAuth;
+export default connect(authDataMapStateToProps, authDataMapDispatchToProps)(AppAuth);

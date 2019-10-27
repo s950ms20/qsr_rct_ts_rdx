@@ -22,11 +22,11 @@ const adminMenuList : adminMenuListItem[] = [
 
     return (
         <React.Fragment>
-                        <MenuListClass>
+                        {/* <MenuListClass>
                 { adminMenuList.map((it) => {return <MenuItem key={it.id}>
                     <Link to={it.link}>{it.name}</Link>
                 </MenuItem>})}
-            </MenuListClass>
+            </MenuListClass> */}
 
         </React.Fragment>
     )

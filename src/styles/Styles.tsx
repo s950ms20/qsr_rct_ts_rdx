@@ -19,7 +19,8 @@ margin: 5px;
 padding: 5px;
 
 &:hover {
-    background: gray;
+    background: lightgray;
+    color: lightgray;
 }
 `
 
@@ -96,9 +97,24 @@ border-radius: 5px;
 export const ProductImg = styled.img`
     width: 200px;
     flex: 1;
+    flex-wrap: wrap;
     /* background-color: lightgray; */
     padding: 5px;
     margin: 5px;
+`
+export const ProductImg2 = styled.img`
+    /* width: 200px; */
+    flex: 1;
+    flex-wrap: wrap;
+    /* flex-shrink: 2; */
+    background-color: lightgray;
+    /* padding: 5px;
+    margin: 5px; */
+
+    &:hover{
+        background-color: black;
+        opacity: 0.7;
+    }
 `
 
 export const ProductBasicInfo = styled.div`
@@ -122,4 +138,10 @@ export const ProductDetailInfo = styled.div`
     box-sizing: border-box;
     text-align: justify;
     border-radius: 5px;
+`
+
+export const ImgSmall = styled.img`
+width: 100px;
+margin: 5px;
+padding: 5px;
 `

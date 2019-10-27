@@ -1,12 +1,12 @@
 import React from 'react';
-import {getData, newObject} from '../Data/ShopData';
-// import { MyButton, MyInput, Flex, InfoField, Row, Col }from '../../styles/Styles';
-import Product from './Product';
+import {getData, Product} from '../Data/ShopData';
+import { Link } from 'react-router-dom'
+import {Flex, ProductImg, ProductBasicInfo, ProductBox, Col, Bold} from '../../styles/Styles';
+import {ContextData} from '../tools/ContextData';
 
-
-const AppShop = () => {
-const [products, setProducts] = React.useState<newObject[]>([]);
-const [updateHelper, setUpdateHelper] = React.useState(1);
+const AppShop: React.FC = () => {
+const [products, setProducts] = React.useState<Product[]>([]);
+const cntx = React.useContext(ContextData);
 
 React.useEffect(
     ()=>{
@@ -16,12 +16,45 @@ React.useEffect(
                     console.log(result)
                 }
             )
-    }, [updateHelper]
-)
+    }, [cntx.updateHelper]
+);
 
     return (
         <React.Fragment>
-    {products.map((prd: newObject, idx: number) => { return  <Product key={prd.id} product={prd} /> } ) }
+    {products.map((prd: Product, idx: number) => {
+        return  (
+            <React.Fragment key={prd.id}>
+                <Link to='/Product' onClick={()=>cntx.setPrd(prd)}>
+                <Flex>
+                <ProductBox>
+                            <Col>
+                                    <ProductImg src={prd.imgs[0]} />
+                            </Col>
+                            <Col>
+                                    <ProductBasicInfo>
+                                        <Bold>
+                                            {prd.author}<br/>
+                                            '{prd.title}'<br/>
+                                        </Bold>
+                                        Released: {prd.releaseDate}<br/>
+                                        Format: {prd.format}<br/>
+                                        Format Details: {prd.formatDetails}<br/>
+                                        {prd.quantity > 0
+                                            ? <>Copies Left: {prd.quantity}<br/></>
+                                            : <>Not Available<br/></>}
+                                        <Bold>
+                                            Price: {prd.price}PLN<br/>
+                                        </Bold>
+                                    </ProductBasicInfo>
+                            </Col>
+                    </ProductBox>
+            </Flex>
+                </Link>
+
+            </React.Fragment>
+        )
+        
+        } ) }
         </React.Fragment>
     )
 }

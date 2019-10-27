@@ -1,33 +1,35 @@
 import React from 'react';
-import { loggedUserData, loggOut } from '../Data/AuthData';
+// import { Data, UserDeliveryAddress } from '../Data/AuthDataFldr/AuthData';
 import { MyButton } from '../../styles/Styles';
+// import {ContextData} from '../tools/ContextData';
+import AppEditUserData from './AppEditUserData';
+import { connect } from 'react-redux';
+import { authDataMapStateToProps, authDataMapDispatchToProps } from '../Data/AuthDataFldr/AuthDataMap';
+import { Data, UserDeliveryAddress } from '../Data/AuthDataFldr/AuthDataTypes';
 
-interface IProps {
+type Props = {
+    userData: Data,
+    onLOGOUT: any,
+    userDeliveryAddress: UserDeliveryAddress
 }
 
-interface IState {
-    actualUserData: string;
-}
-class AppLogout extends React.Component<IProps, IState>{
-    constructor(props: IProps) {
-        super(props)
-        this.state = {
-            actualUserData: loggedUserData().email,
-        }
-    }
-
-    render() {
+const AppLogout: React.FC<Props>=({userData, onLOGOUT, userDeliveryAddress})=>{
+    // const [actualUserData, setActualUserData] = React.useState(userData.email)
+    // const ctx =  React.useContext(ContextData);
+    // ctx.setUserName(actualUserData);
 
     return (
         <React.Fragment>
-            <> Hello {this.state.actualUserData}, what's up? <MyButton onClick={
-                ()=>loggOut()
+            <> Hello
+            { userDeliveryAddress.fisrtName !== '' ? (
+                    <>{userDeliveryAddress.fisrtName} {userDeliveryAddress.lastName}</>
+                    ) : <> {userData.email} </> } , what's up? <MyButton onClick={
+                ()=>onLOGOUT()
                 }>Logout</MyButton> </>
-
-
+                <br/>
+                <AppEditUserData/>
         </React.Fragment>
     )
-    }
 }
 
-export default AppLogout;
+export default connect(authDataMapStateToProps, authDataMapDispatchToProps)(AppLogout);
